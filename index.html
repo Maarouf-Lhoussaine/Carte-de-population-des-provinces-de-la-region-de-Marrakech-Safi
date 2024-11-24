@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Carte du recencement 2024 De la population pour la région de Marrakech-Safi (by MAAROUF)</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1.js"></script>
+        <script src="data/frontierMaroc_2.js"></script>
+        <script src="data/chef_lieu_3.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[30.735481030966483,-10.420310833397924],[32.86525945410669,-6.424167466031539]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var title = new L.Control({'position':'topright'});
+        title.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        title.update = function () {
+            this._div.innerHTML = '<h2>Carte du recencement 2024 De la population pour la région de Marrakech-Safi (by MAAROUF)</h2>';
+        };
+        title.addTo(map);
+        var abstract = new L.Control({'position':'bottomright'});
+        abstract.onAdd = function (map) {
+            this._div = L.DomUtil.create('div',
+            'leaflet-control abstract');
+            this._div.id = 'abstract'
+
+                abstract.show();
+                return this._div;
+            };
+            abstract.show = function () {
+                this._div.classList.remove("abstract");
+                this._div.classList.add("abstractUncollapsed");
+                this._div.innerHTML = 'Réalisation d\'une carte choroplèthe interactive basée sur la variation de la population entre les différentes provinces de la région Marrakech Safi selon la recensement du septembre 2024';
+        };
+        abstract.addTo(map);
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_ESRIShadedRelief_0');
+        map.getPane('pane_ESRIShadedRelief_0').style.zIndex = 400;
+        var layer_ESRIShadedRelief_0 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_ESRIShadedRelief_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_ESRIShadedRelief_0;
+        map.addLayer(layer_ESRIShadedRelief_0);
+        function pop_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Nom_Provin</th>\
+                        <td>' + (feature.properties['Nom_Provin'] !== null ? autolinker.link(feature.properties['Nom_Provin'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Data_Devoir_Carte_Thematique — Data_provinces_Population_2024</th>\
+                        <td>' + (feature.properties['Data_Devoir_Carte_Thematique — Data_provinces_Population_2024'] !== null ? autolinker.link(feature.properties['Data_Devoir_Carte_Thematique — Data_provinces_Population_2024'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Chef lieu</th>\
+                        <td>' + (feature.properties['Chef lieu'] !== null ? autolinker.link(feature.properties['Chef lieu'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_0(feature) {
+            switch(String(feature.properties['Data_Devoir_Carte_Thematique — Data_provinces_Population_2024'])) {
+                case '246098':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '345772':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(201,234,190,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '378932':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(147,213,182,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '425449':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(92,192,191,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '560075':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(59,166,193,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '642171':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(47,135,186,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '719299':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(41,95,169,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '1560704':
+                    return {
+                pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(37,52,148,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1');
+        map.getPane('pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1').style.zIndex = 401;
+        map.getPane('pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1').style['mix-blend-mode'] = 'normal';
+        var layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1 = new L.geoJson(json_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+            layerName: 'layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+            pane: 'pane_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1',
+            onEachFeature: pop_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1,
+            style: style_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_0,
+        });
+        bounds_group.addLayer(layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1);
+        map.addLayer(layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1);
+        function pop_frontierMaroc_2(feature, layer) {
+        }
+
+        function style_frontierMaroc_2_0() {
+            return {
+                pane: 'pane_frontierMaroc_2',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_frontierMaroc_2');
+        map.getPane('pane_frontierMaroc_2').style.zIndex = 402;
+        map.getPane('pane_frontierMaroc_2').style['mix-blend-mode'] = 'normal';
+        var layer_frontierMaroc_2 = new L.geoJson(json_frontierMaroc_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_frontierMaroc_2',
+            layerName: 'layer_frontierMaroc_2',
+            pane: 'pane_frontierMaroc_2',
+            onEachFeature: pop_frontierMaroc_2,
+            style: style_frontierMaroc_2_0,
+        });
+        bounds_group.addLayer(layer_frontierMaroc_2);
+        map.addLayer(layer_frontierMaroc_2);
+        function pop_chef_lieu_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Nom_Provin</th>\
+                        <td>' + (feature.properties['Nom_Provin'] !== null ? autolinker.link(feature.properties['Nom_Provin'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Chef lieu</th>\
+                        <td>' + (feature.properties['Chef lieu'] !== null ? autolinker.link(feature.properties['Chef lieu'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+        function style_chef_lieu_3_0(feature) {
+            var context = {
+                feature: feature,
+                variables: {}
+            };
+            // Start of if blocks and style check logic
+            if (exp_chef_lieu_3rule0_eval_expression(context)) {
+                  return {
+                pane: 'pane_chef_lieu_3',
+                radius: 6.8,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            };
+                }
+            else {
+                return {
+                pane: 'pane_chef_lieu_3',
+                radius: 4.8,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            };
+            }
+        }
+        function style_chef_lieu_3_1(feature) {
+            var context = {
+                feature: feature,
+                variables: {}
+            };
+            // Start of if blocks and style check logic
+            if (exp_chef_lieu_3rule0_eval_expression(context)) {
+                  return {
+                pane: 'pane_chef_lieu_3',
+                radius: 1.4875,
+                opacity: 1,
+                color: 'rgba(227,26,28,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 4.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            };
+                }
+            else {
+                return {
+                pane: 'pane_chef_lieu_3',
+                radius: 0.9625,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,0,0,1.0)',
+                interactive: true,
+            };
+            }
+        }
+        map.createPane('pane_chef_lieu_3');
+        map.getPane('pane_chef_lieu_3').style.zIndex = 403;
+        map.getPane('pane_chef_lieu_3').style['mix-blend-mode'] = 'normal';
+        var layer_chef_lieu_3 = new L.geoJson.multiStyle(json_chef_lieu_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_chef_lieu_3',
+            layerName: 'layer_chef_lieu_3',
+            pane: 'pane_chef_lieu_3',
+            onEachFeature: pop_chef_lieu_3,
+            pointToLayers: [function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_chef_lieu_3_0(feature));
+            },function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_chef_lieu_3_1(feature));
+            },
+        ]});
+        bounds_group.addLayer(layer_chef_lieu_3);
+        map.addLayer(layer_chef_lieu_3);
+        var overlaysTree = [
+            {label: 'chef_lieu<br /><table><tr><td style="text-align: center;"><img src="legend/chef_lieu_3_Marrakech0.png" /></td><td>Marrakech</td></tr><tr><td style="text-align: center;"><img src="legend/chef_lieu_3_Autres1.png" /></td><td>Autres</td></tr></table>', layer: layer_chef_lieu_3},
+            {label: '<img src="legend/frontierMaroc_2.png" />  frontier-Maroc', layer: layer_frontierMaroc_2},
+            {label: 'Data_Devoir_Carte_Thematique — province_marrakech_safi_jointure<br /><table><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeYoussoufia2460980.png" /></td><td>Province de Youssoufia : 246098</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeRehamna3457721.png" /></td><td>Province de Rehamna : 345772</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeChichaoua3789322.png" /></td><td>Province de Chichaoua : 378932</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedEssaouira4254493.png" /></td><td>Province d\'Essaouira : 425449</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeElkalaadessaragna5600754.png" /></td><td>Province de El kalaa des saragna : 560075</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedAlHaouz6421715.png" /></td><td>Province d\'Al Haouz : 642171</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeSafi7192996.png" /></td><td>Province de Safi : 719299</td></tr><tr><td style="text-align: center;"><img src="legend/Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1_ProvincedeMarrakech15607047.png" /></td><td>Province de Marrakech : 1560704</td></tr></table>', layer: layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1},
+            {label: "ESRI Shaded Relief", layer: layer_ESRIShadedRelief_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Data_Devoir_Carte_Thematique — Data_provinces_Population_2024": "int","Nom_Provin": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024 = document.createElement("div");
+            div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.id = "div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024";
+            div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.className = "slider";
+            document.getElementById("menu").appendChild(div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024);
+            var lab_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024 = document.createElement('div');
+            lab_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.innerHTML  = 'Data_Devoir_Carte_Thematique — Data_provinces_Population_2024: <span id="val_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024"></span>';
+            lab_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024);
+            var reset_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024 = document.createElement('div');
+            reset_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.innerHTML = 'clear filter';
+            reset_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.className = 'filterlabel';
+            lab_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.className = 'filterlabel';
+            reset_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.onclick = function() {
+                sel_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024);
+            var sel_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024 = document.getElementById('div_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024');
+            noUiSlider.create(sel_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024, {
+                connect: true,
+                start: [246098, 1560704],
+                step: 1,
+                format: wNumb({
+                    decimals: 0,
+                    }),
+                range: {
+                min: 246098,
+                max: 1560704
+                }
+            });
+            sel_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.noUiSlider.on('update', function (values) {
+            filterVals =[];
+            for (value in values){
+            filterVals.push(parseInt(value))
+            }
+            val_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024 = document.getElementById('val_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024');
+            val_Data_Devoir_Carte_ThematiqueData_provinces_Population_2024.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Nom_Provin = document.createElement('div');
+            div_Nom_Provin.id = "div_Nom_Provin";
+            div_Nom_Provin.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Nom_Provin);
+            sel_Nom_Provin = document.createElement('select');
+            sel_Nom_Provin.multiple = true;
+            sel_Nom_Provin.size = 8;
+            sel_Nom_Provin.id = "sel_Nom_Provin";
+            var Nom_Provin_options_str = "<option value='' unselected></option>";
+            sel_Nom_Provin.onchange = function(){filterFunc()};
+            Nom_Provin_options_str  += '<option value="AL HAOUZ">AL HAOUZ</option>';
+            Nom_Provin_options_str  += '<option value="CHICHAOUA">CHICHAOUA</option>';
+            Nom_Provin_options_str  += '<option value="EL KELAA DES SRAGHNA">EL KELAA DES SRAGHNA</option>';
+            Nom_Provin_options_str  += '<option value="ESSAOUIRA">ESSAOUIRA</option>';
+            Nom_Provin_options_str  += '<option value="MARRAKECH">MARRAKECH</option>';
+            Nom_Provin_options_str  += '<option value="REHAMNA">REHAMNA</option>';
+            Nom_Provin_options_str  += '<option value="SAFI">SAFI</option>';
+            Nom_Provin_options_str  += '<option value="Youssoufia">Youssoufia</option>';
+            sel_Nom_Provin.innerHTML = Nom_Provin_options_str;
+            div_Nom_Provin.appendChild(sel_Nom_Provin);
+            var lab_Nom_Provin = document.createElement('div');
+            lab_Nom_Provin.innerHTML = 'Nom_Provin';
+            lab_Nom_Provin.className = 'filterlabel';
+            div_Nom_Provin.appendChild(lab_Nom_Provin);
+            var reset_Nom_Provin = document.createElement('div');
+            reset_Nom_Provin.innerHTML = 'clear filter';
+            reset_Nom_Provin.className = 'filterlabel';
+            reset_Nom_Provin.onclick = function() {
+                var options = document.getElementById("sel_Nom_Provin").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Nom_Provin.appendChild(reset_Nom_Provin);
+        resetLabels([layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1]);
+        map.on("zoomend", function(){
+            resetLabels([layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_Data_Devoir_Carte_Thematiqueprovince_marrakech_safi_jointure_1]);
+        });
+        </script>
+    </body>
+</html>
